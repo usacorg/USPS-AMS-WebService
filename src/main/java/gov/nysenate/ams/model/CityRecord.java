@@ -25,7 +25,20 @@ public class CityRecord
                                           //    F = General distrib. center
                                           //    G = General mail facility
                                           //    K = Bulk mail center
-                                          //    M = Money order unit
+
+    public char getCityDelvInd() {
+        return cityDelvInd;
+    }
+
+    public char getAutoZoneInd() {
+        return autoZoneInd;
+    }
+
+    public char getUniqueZipInd() {
+        return uniqueZipInd;
+    }
+
+    //    M = Money order unit
                                           //    N = Non-postal name
                                           //       community name,former postal facility,or place name
                                           //    P = Post office
@@ -38,13 +51,17 @@ public class CityRecord
 
     protected final String lastLineNum;   // Preferred last line key
     protected final String lastLineName;  // Preferred city name
+    protected final char cityDelvInd;
+    protected final char autoZoneInd;
+    protected final char uniqueZipInd;
     protected final String stateAbbr;     // State abbreviation
-    protected final int countyNum;        // County number
+    protected final String countyNum;     // County number
     protected final String countyName;    // County name
 
-    public CityRecord(String countyName, int countyNum, String stateAbbr, String lastLineName, String lastLineNum,
-                      char mailingNameInd, char facilityCd, String cityAbbrev, String cityName, char zipClassCode,
-                      String cityKey, String zipCode, char detailCode)
+    public CityRecord(String countyName, String stateAbbr, String zipCode,  String lastLineName, String lastLineNum,
+                      String cityAbbrev, String cityName,String cityKey, String countyNum, char zipClassCode,
+                      char mailingNameInd,  char detailCode, char facilityCd, char cityDelvInd, char autoZoneind,
+                      char uniqueZipInd)
     {
         this.countyName = countyName;
         this.countyNum = countyNum;
@@ -59,6 +76,9 @@ public class CityRecord
         this.cityKey = cityKey;
         this.zipCode = zipCode;
         this.detailCode = detailCode;
+        this.cityDelvInd = cityDelvInd;
+        this.autoZoneInd = autoZoneind;
+        this.uniqueZipInd = uniqueZipInd;
     }
 
     public char getDetailCode() {
@@ -105,7 +125,7 @@ public class CityRecord
         return stateAbbr;
     }
 
-    public int getCountyNum() {
+    public int getCountyNo() {
         return countyNum;
     }
 

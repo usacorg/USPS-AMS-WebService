@@ -20,13 +20,14 @@ public class AmsTest
         Config config = Application.getConfig();
         AmsNativeDao amsNativeDao = new AmsNativeDao();
         AmsSettings amsSettings = new AmsSettings(config);
+        //OutputUtil.printObject(amsSettings);
         amsNativeDao.loadAmsLibrary("amsnative");
         if (amsNativeDao.setupAmsLibrary(amsSettings)) {
             logger.info("Setup AMS successfully!");
         }
 
-        Address inputAddress = new Address("Clarence Center Rd ", "", "Clarence Center", "NY", "");
-        OutputUtil.printObject(amsNativeDao.addressInquiry(inputAddress));
+        //Address inputAddress = new Address("Clarence Center Rd ", "", "Clarence Center", "NY", "");
+        amsNativeDao.cityStateLookup("11716");
 
         if (amsNativeDao.closeAmsLibrary()) {
             logger.info("Closed AMS successfully!");

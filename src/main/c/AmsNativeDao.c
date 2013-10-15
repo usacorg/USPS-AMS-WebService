@@ -296,7 +296,76 @@ JNIEXPORT jobject JNICALL Java_gov_nysenate_ams_dao_AmsNativeDao_addressInquiry
  * Signature: (Ljava/lang/String;)Lgov/nysenate/ams/model/CityStateResult;
  */
 JNIEXPORT jobject JNICALL Java_gov_nysenate_ams_dao_AmsNativeDao_cityStateLookup
-  (JNIEnv * env, jobject jThis, jstring jZip);
+  (JNIEnv * env, jobject jThis, jstring jZip)
+  {
+       jclass thisCls = (*env)->GetObjectClass(env, jThis);
+       jclass CityRecordCls = (*env)->FindClass(env, "gov/nysenate/ams/model/CityRecord");
+       jclass CityStateResultCls = (*env)->FindClass(env, "gov/nysenate/ams/model/CityStateResult");
+
+       CITY_REC city;
+       char* cZip5;
+       cZip5 = getC_String(env, jZip);
+       z4ctyget(&city, cZip5);
+
+            /*printf("Performed USPS Lookup.\n");
+
+          	printf("ZIP RESPONSE:\n"
+          	"Zip code: %s\n"
+          	"City Name: %s\n"
+          	"State Abbreviation: %s\n"
+          	"Finance: %s\n"
+          	"Detail Code: %i\n"
+          	"City Key: %s\n"
+          	"Zip Class Code: %c\n"
+          	"City Abbreviation: %s\n"
+          	"Facility Code: %c\n"
+          	"Mailing Name Indicator: %c\n"
+          	"Last Line Number: %s\n"
+          	"Last Line Name: %s\n"
+          	"City Delivery Indicator: %c\n"
+            "Automated Zone Indicator: %c\n"
+            "Unique Zip Name Indicator: %c\n"
+            "County Number: %s\n"
+            "County Name: %s\n",
+             city.zip_code, city.city_name, city.state_abbrev, city.finance,
+             city.detail_code, city.city_key, city.zip_class_code, city.city_abbrev,
+             city.facility_cd, city.mailing_name_ind, city.last_line_num,
+             city.last_line_name, city.city_delv_ind, city.auto_zone_ind,
+             city.unique_zip_ind, city.county_no, city.county_name);*/
+
+            jstring zipCode, cityName, stateAbbrev, finance, cityKey, cityAbbrev,
+                    lastLineNum, lastLineName, countyName, countyNo;
+
+
+            jchar zipClassCode, mailingNameInd, detailCode, facilityCd, cityDelvInd,
+                  autoZoneInd, uniqueZipInd;
+
+             zipCode = (*env)->NewStringUTF(env, city.zip_code);
+             cityName  = (*env)->NewStringUTF(env, city.city_name);
+             stateAbbrev = (*env)->NewStringUTF(env, city.state_abbrev);
+             finance = (*env)->NewStringUTF(env, city.finance);
+             detailCode = (jchar)city.detail_code;
+             cityKey = (*env)->NewStringUTF(env, city.city_key);
+             zipClassCode = (jchar)city.zip_class_code;
+             cityAbbrev = (*env)->NewStringUTF(env, city.city_abbrev);
+             facilityCd = (jchar) city.facility_cd;
+             mailingNameInd = (jchar) city.mailing_name_ind;
+             lastLineNum = (*env)->NewStringUTF(env, city.last_line_num);
+             lastLineName = (*env)->NewStringUTF(env, city.last_line_name);
+             cityDelvInd = (jchar) city.city_delv_ind;
+             autoZoneInd = (jchar) city.auto_zone_ind;
+             uniqueZipInd = (jchar) city.unique_zip_ind;
+             countyNo =  (*env)->NewStringUTF(env, city.county_no);
+             countyName = (*env)->NewStringUTF(env, city.county_name);
+
+             jmethodID constructor = (*env)->GetMethodID(env, CityRecordCls, "<init>", "(" REP9(STRING_TYPE) REP7(CHAR_TYPE)")V");
+             jobject cityRecordObj = (*env)->NewObject(env, CityRecordCls, constructor, countyName, stateAbbrev,
+                                                       zipCode,  lastLineName, lastLineNum, cityAbbrev,
+                                                       cityName, cityKey, zipClassCode,
+                                                       mailingNameInd, detailCode, facilityCd, countyNo);
+             return jZip;
+
+  }
 
 /*
  * Class:     gov_nysenate_ams_dao_AmsNativeDao
@@ -309,7 +378,7 @@ JNIEXPORT jobject JNICALL Java_gov_nysenate_ams_dao_AmsNativeDao_zip9Inquiry
 
 }
 
-void cacheIDs(JNIEnv * env) 
+void cacheIDs(JNIEnv * env)
 {
     /* Cached class ids */
     jclass tempClassRef = (*env)->FindClass(env, "gov/nysenate/ams/model/AmsSettings");

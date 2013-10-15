@@ -9,5 +9,8 @@ TARGETS= ams
 ams: ams.c config.c tcp.c
 	$(CC) -Wall -I/opt/usps_ams $+ -o $@ -L/opt/usps_ams -lz4lnx64
 
+citystate: citystatetester.c config.c tcp.c
+	$(CC) -Wall -I/opt/usps_ams $+ -o $@ -L/opt/usps_ams -lz4lnx64
+
 clean:
 	rm -f $(TARGETS)

@@ -27,8 +27,14 @@ public class AmsTest
             logger.info("Setup AMS successfully!");
         }
 
+<<<<<<< HEAD
         //Address inputAddress = new Address("Clarence Center Rd ", "", "Clarence Center", "NY", "");
         amsNativeDao.cityStateLookup("11716");
+=======
+        Address inputAddress = new Address("Fairlawn Ave", "", "Albany", "NY", "12203");
+        AddressInquiryResult res = amsNativeDao.addressInquiry(inputAddress);
+        OutputUtil.printObject(res);
+>>>>>>> 180472967e0ae4bf4958d63c3a9dacd74bd5619d
 
         if (amsNativeDao.closeAmsLibrary()) {
             logger.info("Closed AMS successfully!");

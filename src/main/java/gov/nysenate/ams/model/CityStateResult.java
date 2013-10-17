@@ -6,13 +6,13 @@ package gov.nysenate.ams.model;
 
 public class CityStateResult
 {
-    CityRecord result; //Holds the result from CityState look up.
+    protected CityRecord result; //Holds the result from CityState look up.
 
-    int success;   //Returns true if the look up was a success.
+    protected int responseCode;   //Returns true if the look up was a success.
 
-    public CityStateResult(int success, CityRecord result)
+    public CityStateResult(int responseCode, CityRecord result)
     {
-       this.success = success;
+       this.responseCode = responseCode;
        this.result = result;
     }
 
@@ -23,7 +23,14 @@ public class CityStateResult
      */
     public boolean isSuccess()
     {
-        return (success == 0);
+        return (responseCode == 0);
     }
 
+    public CityRecord getResult() {
+        return result;
+    }
+
+    public int getResponseCode() {
+        return responseCode;
+    }
 }

@@ -16,6 +16,8 @@ static jclass ParsedAddressCls;
 static jclass USPSAddressCls;
 static jclass ReturnCodeCls;
 static jclass AddressInquiryResultCls;
+static jclass CityRecordCls;
+static jclass CityStateResultCls;
 
 /* Cached constructors */
 static jmethodID AddressConstr;
@@ -23,6 +25,8 @@ static jmethodID ParsedAddressConstr;
 static jmethodID AddressRecordConstr;
 static jmethodID USPSAddressConstr;
 static jmethodID AddressInquiryResultConstr;
+static jmethodID CityRecordConstr;
+static jmethodID CityStateResultConstr;
 
 /* Cached methods */
 static jmethodID Address_getFirmName;
@@ -32,6 +36,7 @@ static jmethodID Address_getCity;
 static jmethodID Address_getState;
 static jmethodID Address_getZip5;
 
+
 /*
  * Class:     gov_nysenate_ams_dao_AmsNativeDao
  * Method:    setupAmsLibrary
@@ -40,6 +45,9 @@ static jmethodID Address_getZip5;
 JNIEXPORT jboolean JNICALL Java_gov_nysenate_ams_dao_AmsNativeDao_setupAmsLibrary
   (JNIEnv * env, jobject jThis, jobject jAmsSettings)
 {
+    /* Cache all method/constructor ids */
+    cacheIDs(env);
+
     /* Cache all method/constructor ids */
     cacheIDs(env);
 
@@ -111,6 +119,7 @@ JNIEXPORT jboolean JNICALL Java_gov_nysenate_ams_dao_AmsNativeDao_closeAmsLibrar
     /* Close The USPS Address Matching System */
     int ret = z4close();
     if (ret == 0) {
+        printf("Closed AMS");
         return JNI_TRUE;
     }
     printf("Failed to close the Address Matching System. Return code: %d\n", ret);
@@ -141,6 +150,12 @@ JNIEXPORT jobject JNICALL Java_gov_nysenate_ams_dao_AmsNativeDao_addressInquiry
     city = (jstring)(*env)->CallObjectMethod(env, jAddress, Address_getCity);
     state = (jstring)(*env)->CallObjectMethod(env, jAddress, Address_getState);
     zip5 = (jstring)(*env)->CallObjectMethod(env, jAddress, Address_getZip5);
+    firmName = (jstring)(*env)->CallObjectMethod(env, jAddress, Address_getFirmName);
+    addr1 = (jstring)(*env)->CallObjectMethod(env, jAddress, Address_getAddr1);
+    addr2 = (jstring)(*env)->CallObjectMethod(env, jAddress, Address_getAddr2);
+    city = (jstring)(*env)->CallObjectMethod(env, jAddress, Address_getCity);
+    state = (jstring)(*env)->CallObjectMethod(env, jAddress, Address_getState);
+    zip5 = (jstring)(*env)->CallObjectMethod(env, jAddress, Address_getZip5);
 
     /* Convert jstrings to c style strings */
     char * cFirmName, * cAddr1, * cAddr2, * cCity, * cState, * cZip5;
@@ -160,6 +175,7 @@ JNIEXPORT jobject JNICALL Java_gov_nysenate_ams_dao_AmsNativeDao_addressInquiry
     strcpy(parm.istai, cState);
     strcpy(parm.izipc, cZip5);
 
+    /* Free the c strings */
     /* Free the c strings */
     releaseC_String(env, cFirmName, firmName);
     releaseC_String(env, cAddr1, addr1);
@@ -299,15 +315,19 @@ JNIEXPORT jobject JNICALL Java_gov_nysenate_ams_dao_AmsNativeDao_cityStateLookup
   (JNIEnv * env, jobject jThis, jstring jZip)
   {
        jclass thisCls = (*env)->GetObjectClass(env, jThis);
-       jclass CityRecordCls = (*env)->FindClass(env, "gov/nysenate/ams/model/CityRecord");
-       jclass CityStateResultCls = (*env)->FindClass(env, "gov/nysenate/ams/model/CityStateResult");
+       jobject cityStateResultObj;
+       jobject cityRecordObj;
 
        CITY_REC city;
        char* cZip5;
        cZip5 = getC_String(env, jZip);
-       z4ctyget(&city, cZip5);
+       int responseCode;
+       responseCode = z4ctyget(&city, cZip5);
 
-            /*printf("Performed USPS Lookup.\n");
+       if(responseCode == 0)
+       {
+
+            printf("Performed USPS Lookup.\n");
 
           	printf("ZIP RESPONSE:\n"
           	"Zip code: %s\n"
@@ -331,7 +351,7 @@ JNIEXPORT jobject JNICALL Java_gov_nysenate_ams_dao_AmsNativeDao_cityStateLookup
              city.detail_code, city.city_key, city.zip_class_code, city.city_abbrev,
              city.facility_cd, city.mailing_name_ind, city.last_line_num,
              city.last_line_name, city.city_delv_ind, city.auto_zone_ind,
-             city.unique_zip_ind, city.county_no, city.county_name);*/
+             city.unique_zip_ind, city.county_no, city.county_name);
 
             jstring zipCode, cityName, stateAbbrev, finance, cityKey, cityAbbrev,
                     lastLineNum, lastLineName, countyName, countyNo;
@@ -358,12 +378,19 @@ JNIEXPORT jobject JNICALL Java_gov_nysenate_ams_dao_AmsNativeDao_cityStateLookup
              countyNo =  (*env)->NewStringUTF(env, city.county_no);
              countyName = (*env)->NewStringUTF(env, city.county_name);
 
-             jmethodID constructor = (*env)->GetMethodID(env, CityRecordCls, "<init>", "(" REP9(STRING_TYPE) REP7(CHAR_TYPE)")V");
-             jobject cityRecordObj = (*env)->NewObject(env, CityRecordCls, constructor, countyName, stateAbbrev,
+             cityRecordObj = (*env)->NewObject(env, CityRecordCls, CityRecordConstr, countyName, stateAbbrev,
                                                        zipCode,  lastLineName, lastLineNum, cityAbbrev,
-                                                       cityName, cityKey, zipClassCode,
-                                                       mailingNameInd, detailCode, facilityCd, countyNo);
-             return jZip;
+                                                       cityName, cityKey, countyNo, zipClassCode,
+                                                       mailingNameInd, detailCode, facilityCd, cityDelvInd,
+                                                       autoZoneInd, uniqueZipInd);
+             cityStateResultObj = (*env)->NewObject(env, CityStateResultCls, CityStateResultConstr,
+                                                            responseCode, cityRecordObj);
+             }
+             else{
+             cityStateResultObj = (*env)->NewObject(env, CityStateResultCls, CityStateResultConstr,
+                                                                               responseCode, NULL);
+             }
+             return cityStateResultObj;
 
   }
 
@@ -409,21 +436,32 @@ void cacheIDs(JNIEnv * env)
     AddressInquiryResultCls = (jclass) (*env)->NewGlobalRef(env, tempClassRef);
     (*env)->DeleteLocalRef(env, tempClassRef);
 
+    tempClassRef = (*env)->FindClass(env, "gov/nysenate/ams/model/CityRecord");
+    CityRecordCls = (jclass) (*env)->NewGlobalRef(env, tempClassRef);
+    (*env)->DeleteLocalRef(env, tempClassRef);
+
+    tempClassRef = (*env)->FindClass(env, "gov/nysenate/ams/model/CityStateResult");
+    CityStateResultCls = (jclass) (*env)->NewGlobalRef(env, tempClassRef);
+    (*env)->DeleteLocalRef(env, tempClassRef);
+
     /* Cached constructors */
     AddressConstr = (*env)->GetMethodID(env, AddressCls, "<init>", "(" REP7(STRING_TYPE) ")V");
     ParsedAddressConstr = (*env)->GetMethodID(env, ParsedAddressCls, "<init>", "(" REP11(STRING_TYPE) ")V");
     AddressRecordConstr = (*env)->GetMethodID(env, AddressRecordCls, "<init>", "(" INT_TYPE REP10(STRING_TYPE) REP10(STRING_TYPE) REP3(CHAR_TYPE) ")V");
     USPSAddressConstr = (*env)->GetMethodID(env, USPSAddressCls, "<init>", "(" ADDRESS_TYPE PARSED_ADDRESS_TYPE REP7(STRING_TYPE) ")V");
     AddressInquiryResultConstr = (*env)->GetMethodID(env, AddressInquiryResultCls, "<init>", "(" INT_TYPE USPS_ADDRESS_TYPE INT_TYPE STRING_TYPE ARRAY_TYPE ADDRESS_RECORD_TYPE")V");
+    CityRecordConstr = (*env)->GetMethodID(env, CityRecordCls, "<init>", "(" REP9(STRING_TYPE) REP7(CHAR_TYPE)")V");
+    CityStateResultConstr = (*env)->GetMethodID(env, CityStateResultCls, "<init>", "("INT_TYPE CITY_RECORD_TYPE")V");
 
     /* Cached Methods */
-    Address_getFirmName = (*env)->GetMethodID(env, AddressConstr, "getFirmName", NO_ARGS STRING_TYPE);
+   /* Address_getFirmName = (*env)->GetMethodID(env, AddressConstr, "getFirmName", NO_ARGS STRING_TYPE);
     Address_getAddr1 = (*env)->GetMethodID(env, AddressConstr, "getAddr1", NO_ARGS STRING_TYPE);
     Address_getAddr2 = (*env)->GetMethodID(env, AddressConstr, "getAddr2", NO_ARGS STRING_TYPE);
     Address_getCity = (*env)->GetMethodID(env, AddressConstr, "getCity", NO_ARGS STRING_TYPE);
     Address_getState = (*env)->GetMethodID(env, AddressConstr, "getState", NO_ARGS STRING_TYPE);
-    Address_getZip5 = (*env)->GetMethodID(env, AddressConstr, "getZip5", NO_ARGS STRING_TYPE);
+    //Address_getZip5 = (*env)->GetMethodID(env, AddressConstr, "getZip5", NO_ARGS STRING_TYPE);  */
 }
+
 
 jobject getObjectFromMethod(JNIEnv * env, jclass cls, jobject instance, const char * methodName, const char * returnType)
 {

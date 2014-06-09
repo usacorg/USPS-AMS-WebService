@@ -23,6 +23,23 @@ public abstract class BaseApiController extends HttpServlet
     public abstract void init(ServletConfig config) throws ServletException;
 
     /**
+     * Constructs a new Address object using the query parameters of the supplied HttpServletRequest in USAC form.
+     * This method exists to provide consistency among the different controllers when retrieving an
+     * address from the query string.
+     * @param request HttpServletRequest object
+     * @return new Address instance if request was valid
+     *         null if request was null
+     */
+    public static Address getAddressFromUSACParams(HttpServletRequest request)
+    {
+        Address address = null;
+        if (request != null){
+                address = new Address("",request.getParameter("address1"),"",request.getParameter("lastline"),"","","");
+        }
+        return address;
+    }
+
+    /**
      * Constructs a new Address object using the query parameters of the supplied HttpServletRequest.
      * This method exists to provide consistency among the different controllers when retrieving an
      * address from the query string.

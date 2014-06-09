@@ -74,7 +74,16 @@ public class AmsNativeProvider implements AddressService, LicensingService, Libr
 
     /** AddressService implementation
      * -------------------------------*/
-
+    @Override
+    public String usacInquiry(Address address)
+    {
+        if (address != null && !address.isEmpty()) {
+            return this.amsNativeDao.usacInquiry(address);
+        }
+        else return this.amsNativeDao.usacInquiry(new Address(""));
+    }
+    
+    
     @Override
     public AddressInquiryResult addressInquiry(Address address)
     {

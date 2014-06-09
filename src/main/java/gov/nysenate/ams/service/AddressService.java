@@ -12,7 +12,14 @@ import java.util.List;
  */
 public interface AddressService
 {
-    /**
+   /**
+     * Performs a standardized address inquiry using an address and city/state/zip5 information in USAC form.
+     * @param address Address to usacInquiry.
+     * @return String.
+     */
+    public String usacInquiry(Address address);
+	
+	/**
      * Performs a standardized address inquiry using an address and city/state/zip5 information.
      * @param address Address to addressInquiry.
      * @return AddressInquiryResult.

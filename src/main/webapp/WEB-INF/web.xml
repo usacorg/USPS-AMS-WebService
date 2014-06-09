@@ -27,6 +27,16 @@
 
     <!-- Api Controller -->
     <servlet>
+        <display-name>USACValidateController</display-name>
+        <servlet-name>USACValidateController</servlet-name>
+        <servlet-class>gov.nysenate.ams.controller.USACValidateController</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>USACValidateController</servlet-name>
+        <url-pattern>/api/usacvalidate/*</url-pattern>
+    </servlet-mapping>
+
+    <servlet>
         <display-name>AddressValidateController</display-name>
         <servlet-name>AddressValidateController</servlet-name>
         <servlet-class>gov.nysenate.ams.controller.AddressValidateController</servlet-class>

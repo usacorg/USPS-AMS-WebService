@@ -4,6 +4,7 @@ import gov.nysenate.ams.model.Address;
 import gov.nysenate.ams.model.AddressInquiryResult;
 import gov.nysenate.ams.model.AmsSettings;
 import gov.nysenate.ams.model.CityStateResult;
+
 import org.apache.log4j.Logger;
 
 /**
@@ -60,6 +61,14 @@ public class AmsNativeDao
      */
     public native boolean closeAmsLibrary();
 
+    /**
+     * Wrapper to the AMS z4adrinq() method using {address} as input.
+     *
+     * @param address Input Address
+     * @return String
+     */
+    public synchronized native String usacInquiry(Address address);
+    
     /**
      * Wrapper to the AMS z4adrinq() method using {address} as input.
      *

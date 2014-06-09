@@ -3,6 +3,7 @@
 #include <string.h>
 #include <stdlib.h>
 #include <zip4.h>
+#include <z4dpv.h>
 #include <time.h>
 #include <sys/time.h>
 
@@ -120,6 +121,156 @@ JNIEXPORT jboolean JNICALL Java_gov_nysenate_ams_dao_AmsNativeDao_closeAmsLibrar
     printf("Failed to close the Address Matching System. Return code: %d\n", ret);
     return JNI_FALSE;
 }
+
+JNIEXPORT jstring JNICALL Java_gov_nysenate_ams_dao_AmsNativeDao_usacInquiry
+  (JNIEnv * env, jobject jThis, jobject jAddress)
+{
+    ZIP4_PARM parm_pre;
+    memset(&parm_pre, 0, sizeof(ZIP4_PARM));
+
+    /* Retrieve fields from input address. */
+    jstring firmName, addr1, addr2, city, state, zip5;
+    firmName = (jstring)(*env)->CallObjectMethod(env, jAddress, Address_getFirmName);
+    addr1 = (jstring)(*env)->CallObjectMethod(env, jAddress, Address_getAddr1);
+    addr2 = (jstring)(*env)->CallObjectMethod(env, jAddress, Address_getAddr2);
+    city = (jstring)(*env)->CallObjectMethod(env, jAddress, Address_getCity);
+    state = (jstring)(*env)->CallObjectMethod(env, jAddress, Address_getState);
+    zip5 = (jstring)(*env)->CallObjectMethod(env, jAddress, Address_getZip5);
+
+    /* Convert jstrings to c style strings */
+    char * cFirmName, * cAddr1, * cAddr2, * cCity, * cState, * cZip5;
+    cFirmName = getC_String(env, firmName);
+    cAddr1 = getC_String(env, addr1);
+    cAddr2 = getC_String(env, addr2);
+    cCity = getC_String(env, city);
+    cState = getC_String(env, state);
+    cZip5 = getC_String(env, zip5);
+
+    /* Construct the input address struct to pass into the inquiry method. */
+    strcpy(parm_pre.iadl1, cAddr1);
+    strcpy(parm_pre.iadl2, "");
+    strcpy(parm_pre.iadl3, "");
+    strcpy(parm_pre.iprurb, "");
+    strcpy(parm_pre.ictyi, cCity);
+    strcpy(parm_pre.istai, "");
+    strcpy(parm_pre.izipc, "");
+    strcpy(parm_pre.iddpv11, "");
+
+    /* Free the c strings */
+    releaseC_String(env, cFirmName, firmName);
+    releaseC_String(env, cAddr1, addr1);
+    releaseC_String(env, cAddr2, addr2);
+    releaseC_String(env, cCity, city);
+    releaseC_String(env, cState, state);
+    releaseC_String(env, cZip5, zip5);
+
+    /* Call the AMS address inquiry and standardization methods */
+    int responseCode;
+    responseCode = z4adrinq(&parm_pre);
+
+    /*Break Tie*/
+    z4DpvResolveMultiResp(&parm_pre);
+
+    /* STELnk lookup */
+    z4SLNKQuery(&parm_pre);
+
+
+    ZIP4_PARM parm = {{0}};
+    strcpy(parm.iadl1, parm_pre.dadl1);
+    //strcpy(parm.ictyi, parm_pre.dctya);
+    //strcat(parm.ictyi, " ");
+    //strcat(parm.ictyi, parm_pre.dstaa);
+    //strcat(parm.ictyi, " ");
+    strcat(parm.ictyi, parm_pre.zipc);
+    //strcat(parm.ictyi, "-");
+    //strcat(parm.ictyi, parm_pre.addon);
+
+
+    /*Call USPS AMS API with an address */
+    z4adrinq(&parm);
+
+    /*Break Tie*/
+    z4DpvResolveMultiResp(&parm);
+
+    /* STELnk lookup */
+    z4SLNKQuery(&parm);
+
+    /* Restore the original footnotes */
+    strcpy(parm.footnotes, parm_pre.footnotes);
+
+/*char buffer[2 +
+strlen(parm.dadl1) +
+strlen(parm.dctya) +
+strlen(parm.dstaa) +
+strlen(parm.zipc) +
+strlen(parm.addon) +
+1 +
+strlen(parm.footnotes) +
+1 +
+1 +
+1 +
+1 +
+1 +
+strlen(z4DpvGetFootnotes()) +
+strlen(parm.ppnum) +
+strlen(parm.psnum) +
+strlen(parm.prote) +
+strlen(parm.punit) +
+strlen(parm.ppre1) +
+strlen(parm.ppre2) +
+strlen(parm.psuf1) +
+strlen(parm.psuf2) +
+strlen(parm.ppst1) +
+strlen(parm.ppst2) +
+strlen(parm.ppnam) +
+strlen(parm.mpnum) +
+strlen(parm.msnum) +
+strlen(parm.stelnkfoot) +
+strlen(parm.punit2) +
+strlen(parm.psnum2) + 1]; */
+
+    char buffer[512];
+
+    memset(buffer,0,sizeof(buffer));
+    
+    snprintf(buffer,sizeof(buffer)-1,"%d,%s,%s,%s,%s,%s,%d,%s,%c,%c,%c,%c,%c,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s",
+        parm.retcc,
+        parm.dadl1,
+        parm.dctya,
+        parm.dstaa,
+        parm.zipc,
+        parm.addon,
+        parm.respn,
+        parm.footnotes,
+        (char)z4DpvGetCode(0),
+        (char)z4DpvGetCode(2),
+        (char)z4DpvGetCode(4),
+        (char)z4DpvGetCode(14),
+        (char)z4DpvGetCode(7),
+        z4DpvGetFootnotes(),
+        parm.ppnum,
+        parm.psnum,
+        parm.prote,
+        parm.punit,
+        parm.ppre1,
+        parm.ppre2,
+        parm.psuf1,
+        parm.psuf2,
+        parm.ppst1,
+        parm.ppst2,
+        parm.ppnam,
+        parm.mpnum,
+        parm.msnum,
+        parm.stelnkfoot,
+        parm.punit2,
+        parm.psnum2
+        );
+    
+
+    jstring jstrBuf = (jstring)(*env)->NewStringUTF(env, buffer);
+    return jstrBuf;
+}
+
 
 /*
  * Class:     gov_nysenate_ams_dao_AmsNativeDao

@@ -4,6 +4,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.dataformat.xml.XmlMapper;
+import gov.nysenate.ams.client.response.USACInquiryResponse;
 import gov.nysenate.ams.util.Application;
 import gov.nysenate.util.Config;
 import org.apache.log4j.Logger;
@@ -80,6 +81,11 @@ public class ApiFilter implements Filter
                 response.setContentType("application/javascript");
                 response.setContentLength(jsonp.length());
             }
+            else if (request.getAttribute("format") != null && request.getAttribute("format").equals("USAC")) {
+		request.setAttribute(FORMATTED_RESPONSE_KEY,((USACInquiryResponse)responseObj).getResult());
+                response.setContentType("text/plain");
+                response.setContentLength(((USACInquiryResponse)responseObj).getResult().length());
+	    }
             else {
                 String json = jsonMapper.writeValueAsString(responseObj);
                 request.setAttribute(FORMATTED_RESPONSE_KEY, json);

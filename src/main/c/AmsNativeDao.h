@@ -88,8 +88,8 @@ JNIEXPORT jboolean JNICALL Java_gov_nysenate_ams_dao_AmsNativeDao_closeAmsLibrar
 
 /*
  * Class:     gov_nysenate_ams_dao_AmsNativeDao
- * Method:    addressInquiry
- * Signature: (Lgov/nysenate/ams/model/Address;)Ljava/util/String;
+ * Method:    usacInquiry
+ * Signature: (Lgov/nysenate/ams/model/Address;)Ljava/lang/String;
  */
 JNIEXPORT jstring JNICALL Java_gov_nysenate_ams_dao_AmsNativeDao_usacInquiry
   (JNIEnv *, jobject, jobject);

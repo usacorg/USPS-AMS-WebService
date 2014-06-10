@@ -196,42 +196,42 @@ JNIEXPORT jstring JNICALL Java_gov_nysenate_ams_dao_AmsNativeDao_usacInquiry
     /* Restore the original footnotes */
     strcpy(parm.footnotes, parm_pre.footnotes);
 
-/*char buffer[2 +
-strlen(parm.dadl1) +
-strlen(parm.dctya) +
-strlen(parm.dstaa) +
-strlen(parm.zipc) +
-strlen(parm.addon) +
-1 +
-strlen(parm.footnotes) +
-1 +
-1 +
-1 +
-1 +
-1 +
-strlen(z4DpvGetFootnotes()) +
-strlen(parm.ppnum) +
-strlen(parm.psnum) +
-strlen(parm.prote) +
-strlen(parm.punit) +
-strlen(parm.ppre1) +
-strlen(parm.ppre2) +
-strlen(parm.psuf1) +
-strlen(parm.psuf2) +
-strlen(parm.ppst1) +
-strlen(parm.ppst2) +
-strlen(parm.ppnam) +
-strlen(parm.mpnum) +
-strlen(parm.msnum) +
-strlen(parm.stelnkfoot) +
-strlen(parm.punit2) +
-strlen(parm.psnum2) + 1]; */
+    int buffSize = snprintf(NULL,0,"%d,%s,%s,%s,%s,%s,%d,%s,%c,%c,%c,%c,%c,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s",
+        parm.retcc,
+        parm.dadl1,
+        parm.dctya,
+        parm.dstaa,
+        parm.zipc,
+        parm.addon,
+        parm.respn,
+        parm.footnotes,
+        (char)z4DpvGetCode(0),
+        (char)z4DpvGetCode(2),
+        (char)z4DpvGetCode(4),
+        (char)z4DpvGetCode(14),
+        (char)z4DpvGetCode(7),
+        z4DpvGetFootnotes(),
+        parm.ppnum,
+        parm.psnum,
+        parm.prote,
+        parm.punit,
+        parm.ppre1,
+        parm.ppre2,
+        parm.psuf1,
+        parm.psuf2,
+        parm.ppst1,
+        parm.ppst2,
+        parm.ppnam,
+        parm.mpnum,
+        parm.msnum,
+        parm.stelnkfoot,
+        parm.punit2,
+        parm.psnum2
+        ) + 1;
 
-    char buffer[256];
+    char buffer[buffSize];
 
-    //memset(buffer,0,sizeof(buffer));
-    
-    snprintf(buffer,sizeof(buffer)-1,"%d,%s,%s,%s,%s,%s,%d,%s,%c,%c,%c,%c,%c,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s",
+    snprintf(buffer,buffSize,"%d,%s,%s,%s,%s,%s,%d,%s,%c,%c,%c,%c,%c,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s",
         parm.retcc,
         parm.dadl1,
         parm.dctya,

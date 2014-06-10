@@ -12,7 +12,7 @@ public class DetailAddressInquiryResponse extends BaseAddressInquiryResponse
 {
     protected USPSDetailView detail;
     protected int recordCount;
-    protected List<AddressRecordView> records = new ArrayList<>();
+    protected List<AddressRecordView> records = new ArrayList<AddressRecordView>();
 
     public DetailAddressInquiryResponse(AddressInquiryResult result, boolean initCaps) {
         super(result, initCaps);

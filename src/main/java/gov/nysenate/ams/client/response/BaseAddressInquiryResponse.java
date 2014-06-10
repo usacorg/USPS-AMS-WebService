@@ -15,7 +15,7 @@ public class BaseAddressInquiryResponse
     protected boolean validated;
     protected AddressView address;
     protected StatusCodeView status;
-    protected ArrayList<FootnoteView> footnotes = new ArrayList<>();
+    protected ArrayList<FootnoteView> footnotes = new ArrayList<FootnoteView>();
 
     public BaseAddressInquiryResponse(AddressInquiryResult result, boolean initCaps)
     {

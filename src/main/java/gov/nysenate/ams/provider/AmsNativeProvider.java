@@ -115,7 +115,7 @@ public class AmsNativeProvider implements AddressService, LicensingService, Libr
     @Override
     public List<AddressInquiryResult> addressInquiry(List<Address> addresses)
     {
-        List<AddressInquiryResult> addressInquiryResults = new ArrayList<>();
+        List<AddressInquiryResult> addressInquiryResults = new ArrayList<AddressInquiryResult>();
         for (Address address : addresses) {
             addressInquiryResults.add(addressInquiry(address));
         }
@@ -125,7 +125,7 @@ public class AmsNativeProvider implements AddressService, LicensingService, Libr
     @Override
     public List<CityStateResult> cityStateLookup(List<String> zip5List)
     {
-        List<CityStateResult> cityStateResults = new ArrayList<>();
+        List<CityStateResult> cityStateResults = new ArrayList<CityStateResult>();
         for (String zip5 : zip5List) {
             cityStateResults.add(cityStateLookup(zip5));
         }
@@ -135,7 +135,7 @@ public class AmsNativeProvider implements AddressService, LicensingService, Libr
     @Override
     public List<AddressInquiryResult> zip9Inquiry(List<String> zip9List)
     {
-        List<AddressInquiryResult> addressInquiryResults = new ArrayList<>();
+        List<AddressInquiryResult> addressInquiryResults = new ArrayList<AddressInquiryResult>();
         for (String zip9 : zip9List) {
             addressInquiryResults.add(zip9Inquiry(zip9));
         }

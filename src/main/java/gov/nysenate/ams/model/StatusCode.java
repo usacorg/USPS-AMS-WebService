@@ -52,7 +52,7 @@ public enum StatusCode
         "a secondary number (i.e., apartment, suite, etc.) exists.");
 
     /** Used for lookups by code. */
-    private static final Map<Integer, String> codeMap = new HashMap<>();
+    private static final Map<Integer, String> codeMap = new HashMap<Integer, String>();
     static {
         for (StatusCode rc : StatusCode.values()) {
             codeMap.put(rc.code, rc.name());

@@ -76,7 +76,7 @@ public abstract class BaseApiController extends HttpServlet
      */
     public static ArrayList<Address> getAddressesFromJson(String json)
     {
-        ArrayList<Address> addresses = new ArrayList<>();
+        ArrayList<Address> addresses = new ArrayList<Address>();
         try {
             logger.trace("Batch address json body " + json);
             JsonNode root = mapper.readTree(json);
@@ -117,7 +117,7 @@ public abstract class BaseApiController extends HttpServlet
      */
     public static List<String> getZip5ListFromJson(String json)
     {
-        List<String> zip5List = new ArrayList<>();
+        List<String> zip5List = new ArrayList<String>();
         try {
             logger.trace("Batch zip5 json body " + json);
             JsonNode root = mapper.readTree(json);
@@ -160,7 +160,7 @@ public abstract class BaseApiController extends HttpServlet
      */
     public static List<String> getZip9ListFromJson(String json)
     {
-        List<String> zip9List = new ArrayList<>();
+        List<String> zip9List = new ArrayList<String>();
         try {
             logger.trace("Batch zip9 json body " + json);
             JsonNode root = mapper.readTree(json);

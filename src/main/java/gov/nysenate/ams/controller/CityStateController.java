@@ -44,12 +44,12 @@ public class CityStateController extends BaseApiController
         if (batch) {
             String json = IOUtils.toString(request.getInputStream(), "UTF-8");
             List<String> inputZip5List = getZip5ListFromJson(json);
-            List<CityStateResult> results = new ArrayList<>();
+            List<CityStateResult> results = new ArrayList<CityStateResult>();
             if (inputZip5List != null && inputZip5List.size() > 0) {
                 results = amsNativeProvider.cityStateLookup(inputZip5List);
             }
-            List<BaseCityStateResponse> baseResponses = new ArrayList<>();
-            List<DetailCityStateResponse> detailResponses = new ArrayList<>();
+            List<BaseCityStateResponse> baseResponses = new ArrayList<BaseCityStateResponse>();
+            List<DetailCityStateResponse> detailResponses = new ArrayList<DetailCityStateResponse>();
             for (CityStateResult result : results) {
                 if (!detail) {
                     baseResponses.add(new BaseCityStateResponse(result, initCaps));
@@ -59,10 +59,10 @@ public class CityStateController extends BaseApiController
                 }
             }
             if (!detail) {
-                responseObj = new BatchResponse<>(baseResponses);
+                responseObj = new BatchResponse<BaseCityStateResponse>(baseResponses);
             }
             else {
-                responseObj = new BatchResponse<>(detailResponses);
+                responseObj = new BatchResponse<DetailCityStateResponse>(detailResponses);
             }
 
             ApiFilter.setApiResponse(responseObj, request);

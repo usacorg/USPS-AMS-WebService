@@ -19,7 +19,7 @@ public class AddressInquiryResult
         this.responseCode = responseCode;
         this.uspsAddress = uspsAddress;
         this.statusCode = StatusCode.getByCode(statusCode);
-        this.footnotes = new HashSet<>();
+        this.footnotes = new HashSet<Footnote>();
         if (footnotes != null && !footnotes.isEmpty()) {
             footnotes = footnotes.replaceAll("(#| )", "");
             for (String s : footnotes.split("")) {
@@ -37,7 +37,7 @@ public class AddressInquiryResult
             this.records = Arrays.asList(records);
         }
         else {
-            this.records = new ArrayList<>();
+            this.records = new ArrayList<AddressRecord>();
         }
 
     }

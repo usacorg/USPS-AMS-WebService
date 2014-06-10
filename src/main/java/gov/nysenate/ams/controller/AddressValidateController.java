@@ -46,12 +46,12 @@ public class AddressValidateController extends BaseApiController
         if (batch) {
             String json = IOUtils.toString(request.getInputStream(), "UTF-8");
             List<Address> inputAddresses = getAddressesFromJson(json);
-            List<AddressInquiryResult> results = new ArrayList<>();
+            List<AddressInquiryResult> results = new ArrayList<AddressInquiryResult>();
             if (inputAddresses != null && inputAddresses.size() > 0) {
                 results = amsNativeProvider.addressInquiry(inputAddresses);
             }
-            List<BaseAddressInquiryResponse> baseResponses = new ArrayList<>();
-            List<DetailAddressInquiryResponse> detailResponses = new ArrayList<>();
+            List<BaseAddressInquiryResponse> baseResponses = new ArrayList<BaseAddressInquiryResponse>();
+            List<DetailAddressInquiryResponse> detailResponses = new ArrayList<DetailAddressInquiryResponse>();
             for (AddressInquiryResult result : results) {
                 if (!detail) {
                     baseResponses.add(new BaseAddressInquiryResponse(result, initCaps));
@@ -61,10 +61,10 @@ public class AddressValidateController extends BaseApiController
                 }
             }
             if (!detail) {
-                responseObj = new BatchResponse<>(baseResponses);
+                responseObj = new BatchResponse<BaseAddressInquiryResponse>(baseResponses);
             }
             else {
-                responseObj = new BatchResponse<>(detailResponses);
+                responseObj = new BatchResponse<DetailAddressInquiryResponse>(detailResponses);
             }
 
             ApiFilter.setApiResponse(responseObj, request);

@@ -42,12 +42,12 @@ public class Zip9InquiryController extends BaseApiController
         if (batch) {
             String json = IOUtils.toString(request.getInputStream(), "UTF-8");
             List<String> zip9List = getZip9ListFromJson(json);
-            List<AddressInquiryResult> results = new ArrayList<>();
+            List<AddressInquiryResult> results = new ArrayList<AddressInquiryResult>();
             if (zip9List != null && zip9List.size() > 0) {
                 results = amsNativeProvider.zip9Inquiry(zip9List);
             }
-            List<BaseAddressInquiryResponse> baseResponses = new ArrayList<>();
-            List<DetailAddressInquiryResponse> detailResponses = new ArrayList<>();
+            List<BaseAddressInquiryResponse> baseResponses = new ArrayList<BaseAddressInquiryResponse>();
+            List<DetailAddressInquiryResponse> detailResponses = new ArrayList<DetailAddressInquiryResponse>();
             for (AddressInquiryResult result : results) {
                 if (!detail) {
                     baseResponses.add(new BaseAddressInquiryResponse(result, initCaps));
@@ -57,10 +57,10 @@ public class Zip9InquiryController extends BaseApiController
                 }
             }
             if (!detail) {
-                responseObj = new BatchResponse<>(baseResponses);
+                responseObj = new BatchResponse<BaseAddressInquiryResponse>(baseResponses);
             }
             else {
-                responseObj = new BatchResponse<>(detailResponses);
+                responseObj = new BatchResponse<DetailAddressInquiryResponse>(detailResponses);
             }
             ApiFilter.setApiResponse(responseObj, request);
         }

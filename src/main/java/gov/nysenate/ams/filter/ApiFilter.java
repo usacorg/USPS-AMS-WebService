@@ -25,7 +25,7 @@ public class ApiFilter implements Filter
     private static XmlMapper xmlMapper = new XmlMapper();
 
     /** Available format types */
-    public enum FormatType { JSON, XML, JSONP }
+    public enum FormatType { JSON, XML, JSONP, USAC }
 
     @Override
     public void init(FilterConfig filterConfig) throws ServletException
@@ -81,7 +81,7 @@ public class ApiFilter implements Filter
                 response.setContentType("application/javascript");
                 response.setContentLength(jsonp.length());
             }
-            else if (request.getAttribute("format") != null && request.getAttribute("format").equals("USAC")) {
+            else if (request.getAttribute("format") != null && request.getAttribute("format").equals(FormatType.USAC.name())) {
 		request.setAttribute(FORMATTED_RESPONSE_KEY,((USACInquiryResponse)responseObj).getResult());
                 response.setContentType("text/plain");
                 response.setContentLength(((USACInquiryResponse)responseObj).getResult().length());

@@ -38,8 +38,7 @@ public class USACValidateController extends BaseApiController
     }
 
     @Override
-    public void doPost(HttpServletRequest request, HttpServletResponse response) throws 
-ServletException, IOException
+    public void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException
     {
         doGet(request, response);
     }
@@ -48,17 +47,10 @@ ServletException, IOException
     public void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException
     {
         Object responseObj;
-
         Address inputAddress = getAddressFromUSACParams(request);
-        boolean detail = isDetail(request);
-        boolean initCaps = isInitCaps(request);
-
         String result = amsNativeProvider.usacInquiry(inputAddress);
-	logger.info(result);
-
         responseObj = new USACInquiryResponse(result);
         request.setAttribute("format", "USAC");
-
         ApiFilter.setApiResponse(responseObj, request);
     }
 }
